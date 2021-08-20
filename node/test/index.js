@@ -2,7 +2,7 @@ const axios = require('axios')
 const crypto = require('crypto');
 const faker = require('faker')
 
-const host = "http://localhost:3000"
+const host = "http://ec2-13-211-214-113.ap-southeast-2.compute.amazonaws.com:3000"
 
 var users = {}
 

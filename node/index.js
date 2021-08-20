@@ -7,13 +7,14 @@ const mongoose = require('mongoose');
 const crypto = require('crypto');
 const User = require('./model/user');
 const jwt = require('jsonwebtoken');
+const os = require('os')
 
 // docker run -p 3000:3000 --env MONGO=mongodb+srv://root:toor@sit314.g7vp8.mongodb.net/test?retryWrites=true&w=majority --env SECRET="mysecret" --env PORT=3000 smart-light
 
 // connecting to mongo db
 mongoose.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true });
 
-app.get("/", function (req, res) { res.send("Hello there") });
+app.get("/", function (req, res) { res.send("Hello from " + os.hostname) });
 
 // some actions need user auth token
 app.route("/user")

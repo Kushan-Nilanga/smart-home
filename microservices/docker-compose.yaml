@@ -1,0 +1,65 @@
+version: "3"
+services: 
+  nginx-service:
+    build: "nginx-service/"
+    links: 
+      - data-service:data-service
+      - user-service:user-service
+    ports: 
+      - "3000:3000"
+      - "4000:4000"
+      - "5000:5000"
+      - "7000:7000"
+
+  
+  data-service: 
+    build: "data-service/"
+    ports: 
+      - "3001-3010:3000"
+    environment: 
+      - "PORT=3000"
+    deploy:
+      mode: replicated
+      replicas: 2
+
+  user-service: 
+    build: "user-service/"
+    ports: 
+      - "4001-4010:3000"
+    environment: 
+      - "PORT=3000"
+    deploy:
+      mode: replicated
+      replicas: 2
+  
+  device-service: 
+    build: "device-service/"
+    ports: 
+      - "5001-5010:3000"
+    environment: 
+      - "PORT=3000"
+    deploy:
+      mode: replicated
+      replicas: 2
+
+  mqtt-service: 
+    build: "mqtt-service/"
+    ports: 
+      - "7001-7010:3000"
+    environment: 
+      - "PORT=3000"
+    deploy:
+      mode: replicated
+      replicas: 2
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    hostname: my-rabbit
+    volumes:
+      - ./rabbitmq/etc/definitions.json:/etc/rabbitmq/definitions.json
+      - ./rabbitmq/etc/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+      - ./rabbitmq/data:/var/lib/rabbitmq/mnesia/rabbit@my-rabbit
+      - ./rabbitmq/logs:/var/log/rabbitmq/log
+    ports:
+      - 5672:5672
+      - 15672:15672

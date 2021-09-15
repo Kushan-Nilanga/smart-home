@@ -29,7 +29,7 @@ const out = gql`
         createDevice(name: String): Device!
         removeDevice(id: ID!): ID
         removeDevices(ids: [ID]!): [ID]
-        addData(id: ID!, connection: String!, value: String!): UpdateResult
+        addData(id: ID!, value: String!): UpdateResult
     }
 `;
 

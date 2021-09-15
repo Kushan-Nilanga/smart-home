@@ -5,7 +5,6 @@ interface IDevice {
     state: [
         {
             updated: Date;
-            connection: string;
             value: string;
         }
     ];
@@ -16,7 +15,6 @@ const DeviceSchema: Schema = new Schema({
     state: [
         {
             updated: { type: Date },
-            connection: { type: String },
             value: { type: String },
         },
     ],

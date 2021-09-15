@@ -2,9 +2,6 @@ version: "3"
 services: 
   nginx-service:
     build: "nginx-service/"
-    links: 
-      - data-service:data-service
-      - user-service:user-service
     ports: 
       - "3000:3000"
       - "4000:4000"

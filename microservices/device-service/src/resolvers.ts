@@ -1,4 +1,4 @@
-import Device from "../models/device";
+import Device from "./device";
 
 export = {
     Query: {
@@ -45,7 +45,7 @@ export = {
         },
 
         addData: async (parent: any, args: any, context: any, info: any) => {
-            const { id, connection, value } = args;
+            const { id, value } = args;
             const date = new Date();
             if (id === undefined) return;
             return Device.updateOne(
@@ -53,7 +53,6 @@ export = {
                 {
                     $push: {
                         state: {
-                            connection: connection.toString(),
                             value: value,
                             updated: date,
                         },

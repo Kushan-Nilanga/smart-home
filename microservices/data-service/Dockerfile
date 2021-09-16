@@ -1,6 +1,6 @@
 FROM node:alpine
 
-WORKDIR /usr/data-service/
+WORKDIR /usr/device-service/
 
 COPY package.json .
 RUN npm install && npm install typescript -g

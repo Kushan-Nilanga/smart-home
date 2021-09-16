@@ -2,6 +2,9 @@ class Light {
 	id
 	uuid
 	data
+	health
+	state
+	constructor() { }
 }
 
 class User {
@@ -27,3 +30,5 @@ class HealthInstance {
 class HealthState {
 	healthstate
 }
+
+module.exports = { Light, User, DataInstance, ControlState, HealthInstance, HealthState };

@@ -6,3 +6,5 @@ connection-service <br>
 account-service ✅<br>
 control-service <br>
 data-service <br>
+
+![Services Architecture](diagram.png)

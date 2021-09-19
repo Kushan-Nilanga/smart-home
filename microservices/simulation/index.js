@@ -1,15 +1,13 @@
-const { Light } = require('./models');
+const light_sim = require('./lights-simulation');
+const action_sim = require('./action-simulation');
 
-require('./models');
 
-class LightSimulation {
-	lights;
-	constructor(numLights = 1000) {
-		this.lights = []
-		for (let i = 0; i < numLights; i++) {
-			this.lights.push(new Light());
-		}
-	}
-}
+const root = "http://localhost:3000"
 
-new LightSimulation(10);
+const user_endpoint = root + "/user"
+const device_endpoint = root + "/device"
+const manager_endpoint = root + "/manager"
+const control_endpoint = root + "/control"
+
+const mylightsim = new light_sim.LightSimulation();
+const myactionsim = new action_sim.ActionSimulation(mylightsim);

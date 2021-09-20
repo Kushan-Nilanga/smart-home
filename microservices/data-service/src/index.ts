@@ -3,6 +3,7 @@ import { ApolloServerPluginDrainHttpServer } from "apollo-server-core";
 import express from "express";
 import mongoose from "mongoose";
 import http from "http";
+import cors from "cors";
 import os from "os";
 
 import typeDefs from "./typedefs";
@@ -12,24 +13,25 @@ const port = process.env.PORT || 4000;
 const user = process.env.USER_SERVICE || "http://localhost:4000/";
 
 const app = express();
+app.use(cors());
 
-app.use("/graphql", (req, res, next) => {
-  if (req.headers.token === undefined)
-    return res.send(400).send("no auth token");
-  http.request(
-    {
-      hostname: user,
-      method: "GET",
-      headers: {
-        token: req.headers.token,
-      },
-    },
-    (resp) => {
-      console.log(resp.statusMessage);
-    }
-  );
-  next();
-});
+// app.use("/graphql", (req, res, next) => {
+//   if (req.headers.token === undefined)
+//     return res.status(400).send("no auth token");
+//   http.request(
+//     {
+//       hostname: user,
+//       method: "GET",
+//       headers: {
+//         token: req.headers.token,
+//       },
+//     },
+//     (resp) => {
+//       console.log(resp.statusMessage);
+//     }
+//   );
+//   next();
+// });
 
 async function startApolloServer(typeDefs: any, resolvers: any) {
   await mongoose.connect(
@@ -54,5 +56,5 @@ startApolloServer(typeDefs, resolvers);
 
 app.get("/", (req, res) => {
   // render the index template
-  res.send("device-service active 💡, host: " + os.hostname());
+  res.send("data-service active at port 4000, host: " + os.hostname());
 });

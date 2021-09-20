@@ -1,4 +1,5 @@
 import Device from "./device";
+import User from "./user";
 
 export = {
   Query: {
@@ -6,15 +7,34 @@ export = {
     // devices: async (parent, args: any, context, info) => {
     devices: async (parent: any, args: any, context: any, info: any) => {
       const { id, ids } = args;
-      if (ids !== undefined) {
+      if (ids !== undefined)
         return await Device.find().where("_id").in(ids).exec();
-      }
+
       if (!undefined === id) return await Device.find({ id });
       return await Device.find();
+    },
+
+    //----------------------------------------------------------------------
+    // USER
+    user: async (parent: any, args: any, context: any, info: any) => {
+      const { pass, email } = args;
+      if (email === undefined || pass === undefined) return {};
+      const usr = await User.findOne({ pass: pass, email: email });
+      return usr;
     },
   },
 
   Mutation: {
+    //----------------------------------------------------------------------
+    // USER
+    createUser: async (parent: any, args: any, context: any, info: any) => {
+      const { pass, email } = args;
+      if (email === undefined || pass === undefined) return {};
+      const usr = new User({ pass: pass, email: email });
+      await usr.save();
+      return usr;
+    },
+
     // create new device
     createDevice: async (_: any, { name }: any) => {
       const dev = new Device({ name });

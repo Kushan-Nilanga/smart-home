@@ -10,32 +10,61 @@
  * 6. Remove light
  */
 
+const axios = require('axios').default;
+axios.defaults.headers.common = { "Content-Type": "application/json" }
+
+User: {
+	email: String
+	pass: String
+	token: String
+}
 
 class ActionSimulation {
-	user_endpoint
-	control_endpoint
-	manager_endpoint
+	_user_endpoint = ""
+	_control_endpoint = ""
+	_manager_endpoint = ""
 
-	user_functions = {
-		signin_user() { },
-		login_user() { },
-		verify_user() { }
+	signin_user(email, pass) {
+		axios.post(
+			this._user_endpoint + "/signin", { email: email, pass: pass }
+		).then((res) => {
+			console.log(res.data);
+		}).catch(err => {
+			console.log(err.message);
+		})
 	}
 
-	control_functions = {
-		light_status() { }
+	login_user(email, pass) {
+		axios.post(
+			this._user_endpoint + "/login", { email: email, pass: pass }
+		).then((res) => {
+			console.log(res.data)
+		}).catch(err => {
+			console.log(err.message);
+		})
 	}
 
-	manager_functions = {
-		add_light() { },
-		remove_light() { }
+	verify_user(token) {
+		axios.post(
+			this._user_endpoint + "/verify", { token: token }
+		).then((res) => {
+			console.log(res.data);
+		}).catch(err => {
+			console.log(err.message);
+		})
 	}
+
+
+	light_status() { }
+
+	add_light() { }
+	remove_light() { }
+
 
 	constructor(light_sim, dns) {
-
-		user_endpoint = dns + "/user"
-		control_endpoint = dns + "/control"
-		manager_endpoint = dns + "/manager"
+		this._user_endpoint = dns + ":3000"
+		this._control_endpoint = dns + "/control"
+		this._manager_endpoint = dns + "/manager"
 	}
 }
 

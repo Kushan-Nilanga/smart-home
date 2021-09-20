@@ -12,13 +12,30 @@
 
 
 class ActionSimulation {
-	request_chance
-	constructor(light_sim, request_chance = 1) {
-		this.request_chance = request_chance;
+	user_endpoint
+	control_endpoint
+	manager_endpoint
 
-		light_sim.light_list.forEach(element => {
-		});
+	user_functions = {
+		signin_user() { },
+		login_user() { },
+		verify_user() { }
+	}
 
+	control_functions = {
+		light_status() { }
+	}
+
+	manager_functions = {
+		add_light() { },
+		remove_light() { }
+	}
+
+	constructor(light_sim, dns) {
+
+		user_endpoint = dns + "/user"
+		control_endpoint = dns + "/control"
+		manager_endpoint = dns + "/manager"
 	}
 }
 

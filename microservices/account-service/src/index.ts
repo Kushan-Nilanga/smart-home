@@ -1,91 +1,96 @@
-import express from "express";
 import os from "os";
-import mongoose from "mongoose";
+import cors from "cors";
+import axios from "axios";
+import express from "express";
 import jwt from "jsonwebtoken";
+import bodyParser from "body-parser";
 
-// User Schema Definition
-const User = mongoose.model(
-    "User",
-    new mongoose.Schema({
-        email: "string",
-        pass: "string",
-    })
-);
+const data_service =
+  "http://localhost:4000/graphql" || process.env.DATA_SERVICE;
+const secret = "mysecret";
 
-// Environment vars
+class User {
+  email: String;
+  pass: String;
+  token: String = "";
+  constructor(userdata: any) {
+    if (userdata.email === undefined || userdata.pass === undefined)
+      throw new Error("undefined username or password");
+    this.pass = userdata.pass;
+    this.email = userdata.email;
+  }
+}
+
 const port = process.env.PORT || 3000;
-const mongo =
-    process.env.MONGO ||
-    "mongodb+srv://root:toor@sit314.g7vp8.mongodb.net/test?retryWrites=true&w=majority";
-const secret = process.env.SECRET || "secret";
+// const secret = process.env.SECRET || "secret";
 
 var app = express();
-mongoose.connect(mongo);
+app.use(bodyParser.json());
+app.use(cors());
 
 // Signin endpoint
 app.post("/signin", async (req, res) => {
-    if (req.headers.pass === undefined)
-        return res.status(400).send("no password");
-
-    if (req.headers.email === undefined)
-        return res.status(400).send("no email");
-
-    User.findOne({ email: req.headers.email }, (err: any, found: any) => {
-        if (found) return res.status(400).send("user exists");
-
-        const newUser = new User({
-            email: req.headers.email,
-            pass: req.headers.pass,
-        });
-
-        newUser.save((err) => {
-            if (err) {
-                return res.status(400).send("error saving");
-            }
-            return res.status(200).send("user saved successfully");
-        });
-    });
+  try {
+    const newUser = new User(req.body);
+    axios
+      .post(data_service, {
+        query: `
+				mutation{
+					createUser(email:"${newUser.email}", pass:"${newUser.pass}"){
+						email
+					}
+				}
+			`,
+      })
+      .then((result) => {
+        return res.send("Sign in complete");
+      });
+  } catch (e) {
+    return res.send("Error signing the user");
+  }
 });
 
 // Login endpoint
-app.get("/login", (req, res) => {
-    if (req.headers.pass === undefined)
-        return res.status(400).send("no password");
-
-    if (req.headers.email === undefined)
-        return res.status(400).send("no email");
-
-    User.findOne({ email: req.headers.email }, (err: any, found: any) => {
-        if (!found) return res.status(400).send("couldn't log in");
-        return res.send(jwt.sign({ userID: found._id.toString() }, secret));
-    });
+app.post("/login", (req, res) => {
+  try {
+    const findUser = new User(req.body);
+    axios
+      .post(data_service, {
+        query: `
+			query	{
+				user(email:"${findUser.email}", pass:"${findUser.pass}") {
+					_id
+				}
+			}
+			`,
+      })
+      .then((result) => {
+        const token = jwt.sign({ data: result.data }, secret);
+        return res.send(token);
+      });
+  } catch (e) {
+    return res.send("error logging in");
+  }
 });
 
 // verify user tokens
-app.get("/verify", (req, res) => {
-    if (req.headers.token === undefined)
-        return res.status(400).send("no token");
-
-    jwt.verify(req.headers.token.toString(), secret, (err, decoded) => {
-        if (decoded === undefined || decoded.userID === undefined)
-            return res.status(400).send("token verification unsuccessful");
-
-        User.findOne({ _id: decoded.userID }, (err: any, found: any) => {
-            if (err) return res.status(400).send("user find error");
-            if (!found) return res.status(400).send("permission denied");
-            return res.status(200).send("authenticated");
-        });
-    });
+app.post("/verify", (req, res) => {
+  if (req.body.token === undefined) return res.status(400).send("no token");
+  jwt.verify(req.body.token, secret, (err: any, decoded: any) => {
+    if (err) return res.status(400).send("cannot verify token");
+    if (decoded !== undefined) return res.send(decoded);
+    return res.status(400).send("token error");
+  });
 });
 
 // Default endpoint
 // define a route handler for the default home page
 app.get("/", (req, res) => {
-    // render the index template
-    res.send("user-service active, host: " + os.hostname());
+  // render the index template
+  res.send("👥 account service active, host: " + os.hostname());
 });
 
 // start the express server
 app.listen(port, () => {
-    console.log(`server started at http://127.0.0.1:${port}`);
+  console.log(`accounts service started at http://127.0.0.1:${port}`);
 });

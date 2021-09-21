@@ -1,44 +1,35 @@
 import { gql } from "apollo-server-core";
 
 const out = gql`
-  type UpdateResult {
-    acknowledged: Boolean
-    modifiedCount: Int
-    upsertedId: ID
-    upsertedCount: Int
-    matchedCount: Int
-  }
-
-  type User {
-    _id: ID
-    email: String
-    pass: String
-  }
-
   type State {
+    id: ID!
     updated: String
-    connection: String
-    value: String
+    health: String
+    state: String
   }
 
   type Device {
-    _id: ID!
-    name: String
+    _id: ID
+    uuid: String!
     state: [State]
   }
 
+  type User {
+    id: ID!
+    email: String
+    pass: String
+    devices: [Device]
+  }
+
   type Query {
-    devices(id: ID, ids: [ID]): [Device]
-    user(email: String, pass: String): User
+    userid(user_id: ID!): User
+    user(email: String!, pass: String!): User
   }
 
   type Mutation {
-    createUser(email: String, pass: String): User
-
-    createDevice(name: String): Device!
-    removeDevice(id: ID!): ID
-    removeDevices(ids: [ID]!): [ID]
-    addData(id: ID!, value: String!): UpdateResult
+    createUser(email: String!, pass: String!): User
+    createDevice(user_id: ID!, uuid: String!): String
+    removeDevice(user_id: ID!, device_id: ID!): String!
   }
 `;
 

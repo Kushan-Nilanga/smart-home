@@ -1,25 +1,18 @@
-import Device from "./device";
-import User from "./user";
+import { User, Device } from "./models/user";
+import mongo from "mongodb";
 
 export = {
   Query: {
-    // getting device information
-    // devices: async (parent, args: any, context, info) => {
-    devices: async (parent: any, args: any, context: any, info: any) => {
-      const { id, ids } = args;
-      if (ids !== undefined)
-        return await Device.find().where("_id").in(ids).exec();
-
-      if (!undefined === id) return await Device.find({ id });
-      return await Device.find();
-    },
-
     //----------------------------------------------------------------------
     // USER
+    userid: async (parent: any, args: any, context: any, info: any) => {
+      const { user_id } = args;
+      const usr = await User.findById(user_id);
+      return usr;
+    },
     user: async (parent: any, args: any, context: any, info: any) => {
       const { pass, email } = args;
-      if (email === undefined || pass === undefined) return {};
-      const usr = await User.findOne({ pass: pass, email: email });
+      const usr = await User.findOne({ pass: pass, email: email }).exec();
       return usr;
     },
   },
@@ -35,47 +28,35 @@ export = {
       return usr;
     },
 
-    // create new device
-    createDevice: async (_: any, { name }: any) => {
-      const dev = new Device({ name });
-      await dev.save();
-      return dev;
-    },
-
-    // remove 1 device
-    removeDevice: async (parent: any, args: any, context: any, info: any) => {
-      const { id } = args;
-      if (id === undefined) return;
-      await Device.findByIdAndDelete(id);
-      return id;
-    },
-
-    // remove devices
-    removeDevices: async (parent: any, args: any, context: any, info: any) => {
-      const { ids } = args;
-      if (ids === undefined) return;
-      await Device.deleteMany().where("_id").in(ids).exec();
-      return ids;
-    },
-
-    // push data to database
-    addData: async (parent: any, args: any, context: any, info: any) => {
-      const { id, value } = args;
-      const date = new Date();
-      if (id === undefined) return;
-      return Device.updateOne(
-        { _id: id },
-        {
-          $push: {
-            state: {
-              value: value,
-              updated: date,
-            },
-          },
-        }
-      ).then((data: any) => {
-        return data;
+    //-----------------------------------------------------------------------
+    // DEVICE
+    createDevice: async (parent: any, args: any, context: any, info: any) => {
+      const { user_id, uuid } = args;
+      const user = await User.findById(user_id);
+      if (user === null) return Error("user not found");
+      const newdevice = new Device({ uuid: uuid });
+      user?.devices.push(newdevice);
+      const saved = await user?.save().then(() => {
+        return "success";
       });
+      return saved;
+    },
+
+    removeDevice: async (parent: any, args: any, context: any, info: any) => {
+      const { user_id, device_id } = args;
+      var response: any = "error";
+      var user = await User.findById(user_id);
+      if (user === null) throw new Error("user not found");
+      await user.devices.forEach((element: any, id: number) => {
+        if (element._id.toString() === device_id) {
+          user.devices.splice(id, 1);
+          user.save();
+          response = "request completed";
+          return;
+        }
+        throw new Error("device does not exist");
+      });
+      return response;
     },
   },
 };

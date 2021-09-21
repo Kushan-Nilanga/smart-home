@@ -10,28 +10,9 @@ import typeDefs from "./typedefs";
 import resolvers from "./resolvers";
 
 const port = process.env.PORT || 4000;
-const user = process.env.USER_SERVICE || "http://localhost:4000/";
 
 const app = express();
 app.use(cors());
-
-// app.use("/graphql", (req, res, next) => {
-//   if (req.headers.token === undefined)
-//     return res.status(400).send("no auth token");
-//   http.request(
-//     {
-//       hostname: user,
-//       method: "GET",
-//       headers: {
-//         token: req.headers.token,
-//       },
-//     },
-//     (resp) => {
-//       console.log(resp.statusMessage);
-//     }
-//   );
-//   next();
-// });
 
 async function startApolloServer(typeDefs: any, resolvers: any) {
   await mongoose.connect(

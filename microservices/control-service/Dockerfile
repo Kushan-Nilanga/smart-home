@@ -1,6 +1,6 @@
 FROM node:alpine
 
-WORKDIR /account-service
+WORKDIR /control-service
 
 COPY package.json .
 RUN npm install && npm install typescript -g

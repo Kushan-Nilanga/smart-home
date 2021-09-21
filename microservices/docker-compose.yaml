@@ -1,62 +1,56 @@
 version: "3"
-services: 
-  nginx-service:
-    build: "nginx-service/"
-    ports: 
-      - "3000:3000"
-      - "4000:4000"
-      - "5000:5000"
-      - "7000:7000"
-
-  
-  data-service: 
-    build: "data-service/"
-    ports: 
-      - "3001-3010:3000"
-    environment: 
-      - "PORT=3000"
-    deploy:
-      mode: replicated
-      replicas: 2
-
-  user-service: 
-    build: "user-service/"
-    ports: 
-      - "4001-4010:3000"
-    environment: 
-      - "PORT=3000"
-    deploy:
-      mode: replicated
-      replicas: 2
-  
-  device-service: 
-    build: "device-service/"
-    ports: 
-      - "5001-5010:3000"
-    environment: 
-      - "PORT=3000"
-    deploy:
-      mode: replicated
-      replicas: 2
-
-  mqtt-service: 
-    build: "mqtt-service/"
-    ports: 
-      - "7001-7010:3000"
-    environment: 
-      - "PORT=3000"
-    deploy:
-      mode: replicated
-      replicas: 2
-
-  rabbitmq:
-    image: rabbitmq:3-management
-    hostname: my-rabbit
-    volumes:
-      - ./rabbitmq/etc/definitions.json:/etc/rabbitmq/definitions.json
-      - ./rabbitmq/etc/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
-      - ./rabbitmq/data:/var/lib/rabbitmq/mnesia/rabbit@my-rabbit
-      - ./rabbitmq/logs:/var/log/rabbitmq/log
+services:
+  account-service:
+    build: "account-service/"
     ports:
-      - 5672:5672
-      - 15672:15672
+      - "3020:3000"
+    environment:
+      - "DATA_SERVICE=http://data-service:3000/graphql"
+      - "SECRET=mysecret"
+      - "PORT=3000"
+    depends_on:
+      - data-service
+    networks:
+      - some-net
+
+  # communication-service:
+  #   build: "communication-service/"
+  #   ports:
+  #     - "3010:3000"
+  #   environment:
+  #     - "PORT:3000"
+  #     - "MQTT=mqtt://test.mosquitto.org"
+  #     - "DATA_SERVICE=http://localhost:3040/graphql"
+
+  # control-service:
+  #   build: "control-service/"
+  #   ports:
+  #     - "3030:3000"
+  #   environment:
+  #     - "PORT=3000"
+  #     - "DATA_SERVICE=http://localhost:3040/graphql"
+
+  data-service:
+    build: "data-service/"
+    ports:
+      - "3040:3000"
+    environment:
+      - "PORT=3000"
+    networks:
+      - some-net
+
+  manager-service:
+    build: "light-manager-service/"
+    ports:
+      - "3050:3000"
+    environment:
+      - "DATA_SERVICE=http://data-service:3000/graphql"
+      - "ACCOUNT_SERVICE=http://account-service:3000"
+      - "PORT=3000"
+    depends_on:
+      - data-service
+      - account-service
+
+networks:
+  some-net:
+    driver: bridge

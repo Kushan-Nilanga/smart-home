@@ -1,13 +1,18 @@
-import express from "express";
 import os from "os";
-const port = process.env.PORT;
-const mqtt_url = process.env.MQTT;
+import mqtt from "mqtt";
+import express from "express";
+
+const port = process.env.PORT || 3000;
+const mqtt_url = process.env.MQTT || "mqtt://test.mosquitto.org";
+const data_service = process.env.DATA_SERVICE || "http://localhost:4000";
 
 var app = express();
+const client = mqtt.connect(mqtt_url).on("connect", () => {
+  client.subscribe("/smart-light/#");
+});
 
 // define a route handler for the default home page
 app.get("/", (req, res) => {
-  // render the index template
   res.send("mqtt-service active, host: " + os.hostname());
 });
 

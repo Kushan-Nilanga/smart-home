@@ -13,12 +13,6 @@
 const axios = require('axios').default;
 axios.defaults.headers.common = { "Content-Type": "application/json" }
 
-User: {
-	email: String
-	pass: String
-	token: String
-}
-
 class ActionSimulation {
 	_user_endpoint = ""
 	_control_endpoint = ""
@@ -53,9 +47,6 @@ class ActionSimulation {
 			console.log(err.message);
 		})
 	}
-
-
-	light_status() { }
 
 	add_light() { }
 	remove_light() { }

@@ -5,8 +5,9 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import bodyParser from "body-parser";
 
+const port = process.env.PORT || 4010;
 const data_service =
-  "http://localhost:4000/graphql" || process.env.DATA_SERVICE;
+  process.env.DATA_SERVICE || "http://localhost:4000/graphql";
 const secret = "mysecret";
 
 class User {
@@ -20,9 +21,6 @@ class User {
     this.email = userdata.email;
   }
 }
-
-const port = process.env.PORT || 3000;
-// const secret = process.env.SECRET || "secret";
 
 var app = express();
 app.use(bodyParser.json());
@@ -80,6 +78,7 @@ app.post("/verify", (req, res) => {
   jwt.verify(req.body.token, secret, (err: any, decoded: any) => {
     if (err) return res.status(400).send("cannot verify token");
     if (decoded !== undefined) return res.send(decoded);
+    console.log(decoded);
     return res.status(400).send("token error");
   });
 });

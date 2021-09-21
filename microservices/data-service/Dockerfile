@@ -1,9 +1,9 @@
 FROM node:alpine
 
-WORKDIR /usr/device-service/
+WORKDIR /data-service/
 
 COPY package.json .
 RUN npm install && npm install typescript -g
 COPY . .
 RUN tsc
-CMD ["node", "dist/index.js"]
+CMD ["node", "build/index.js"]

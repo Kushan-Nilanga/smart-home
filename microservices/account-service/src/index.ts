@@ -59,13 +59,14 @@ app.post("/login", (req, res) => {
         query: `
 			query	{
 				user(email:"${findUser.email}", pass:"${findUser.pass}") {
-					_id
+					id
+					email
 				}
 			}
 			`,
       })
       .then((result) => {
-        const token = jwt.sign({ data: result.data }, secret);
+        const token = jwt.sign({ data: result.data, logged: true }, secret);
         return res.send(token);
       });
   } catch (e) {

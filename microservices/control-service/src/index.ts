@@ -2,7 +2,7 @@ import { Request } from "express";
 import express from "express";
 import bodyParser from "body-parser";
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3020;
 const data_service =
   process.env.DATA_SERVICE || "http://localhost:4000/graphql";
 
@@ -102,7 +102,7 @@ app.post("/health", (req, res) => {
   // TODO send control requests to communication server
 });
 
-app.listen(3000, () => {
+app.listen(port, () => {
   console.log(`control server 🎮 listening at http://localhost:${port}`);
 });
 
@@ -111,4 +111,3 @@ app.listen(3000, () => {
 // get devices from devices service
 // run health checks on random devices
 // send those commands to communication server
-setInterval(() => {}, 2000);

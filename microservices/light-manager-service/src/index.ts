@@ -3,7 +3,7 @@ import axios from "axios";
 import express from "express";
 import bodyParser from "body-parser";
 
-const port = process.env.PORT || 3010;
+const port = process.env.PORT || 3040;
 const accounts_service = process.env.ACCOUNT_SERVICE || "http://localhost:3000";
 const data_service =
   process.env.DATA_SERVICE || "http://localhost:4000/graphql";

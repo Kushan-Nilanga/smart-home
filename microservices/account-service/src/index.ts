@@ -5,7 +5,7 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import bodyParser from "body-parser";
 
-const port = process.env.PORT || 4010;
+const port = process.env.PORT || 3000;
 const data_service =
   process.env.DATA_SERVICE || "http://localhost:4000/graphql";
 const secret = "mysecret";

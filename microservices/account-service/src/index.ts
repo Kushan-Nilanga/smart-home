@@ -43,8 +43,8 @@ app.post("/signin", async (req, res) => {
       .then((result) => {
         return res.send("Sign in complete");
       });
-  } catch (e) {
-    return res.send("Error signing the user");
+  } catch (e: any) {
+    return res.send(e.message);
   }
 });
 

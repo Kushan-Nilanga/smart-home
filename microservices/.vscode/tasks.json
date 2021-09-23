@@ -1,0 +1,110 @@
+{
+  "version": "2.0.0",
+  "presentation": {
+    "echo": true,
+    "reveal": "always",
+    "focus": true,
+    "panel": "shared",
+    "showReuseMessage": true,
+    "clear": false
+  },
+  "tasks": [
+    {
+      "label": "Build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "dependsOn": [
+        "accounts",
+        "communication",
+        "control",
+        "data",
+        "manager",
+        "ts-accounts",
+        "ts-communication",
+        "ts-control",
+        "ts-data",
+        "ts-manager"
+      ]
+    },
+    // Nodemon Watch
+    {
+      "label": "accounts",
+      "type": "shell",
+      "command": "cd account-service && nodemon node build",
+      "dependsOn": ["kill"],
+      "args": [],
+      "isBackground": true
+    },
+    {
+      "label": "communication",
+      "type": "shell",
+      "command": "cd communication-service && nodemon node build",
+      "dependsOn": ["kill"],
+      "args": [],
+      "isBackground": true
+    },
+    {
+      "label": "control",
+      "type": "shell",
+      "command": "cd control-service && nodemon node build",
+      "dependsOn": ["kill"],
+      "args": [],
+      "isBackground": true
+    },
+    {
+      "label": "data",
+      "type": "shell",
+      "command": "cd data-service && nodemon node build",
+      "dependsOn": ["kill"],
+      "args": [],
+      "isBackground": true
+    },
+    {
+      "label": "manager",
+      "type": "shell",
+      "command": "cd light-manager-service && nodemon node build",
+      "dependsOn": ["kill"],
+      "args": [],
+      "isBackground": true
+    },
+
+    // Typescript Watch
+    {
+      "label": "ts-accounts",
+      "type": "shell",
+      "command": "cd account-service && tsc -w",
+      "args": [],
+      "isBackground": true
+    },
+    {
+      "label": "ts-communication",
+      "type": "shell",
+      "command": "cd communication-service && tsc -w",
+      "args": [],
+      "isBackground": true
+    },
+    {
+      "label": "ts-control",
+      "type": "shell",
+      "command": "cd control-service && tsc -w",
+      "args": [],
+      "isBackground": true
+    },
+    {
+      "label": "ts-data",
+      "type": "shell",
+      "command": "cd data-service && tsc -w",
+      "args": [],
+      "isBackground": true
+    },
+    {
+      "label": "ts-manager",
+      "type": "shell",
+      "command": "cd light-manager-service && tsc -w",
+      "args": [],
+      "isBackground": true
+    }
+  ]
+}

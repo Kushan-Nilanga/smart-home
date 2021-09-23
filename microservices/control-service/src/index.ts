@@ -1,10 +1,13 @@
-import { Request } from "express";
+import axios from "axios";
 import express from "express";
 import bodyParser from "body-parser";
 
 const port = process.env.PORT || 3020;
 const data_service =
   process.env.DATA_SERVICE || "http://localhost:4000/graphql";
+const communication_service =
+  process.env.COMMUNICATION_SERVICE || "http://localhost:3010";
+const accounts_service = process.env.ACCOUNT_SERVICE || "http://localhost:3000";
 
 /**
  * Functionality
@@ -14,91 +17,62 @@ const data_service =
  */
 
 // Abstract entity of Control State
-class DataInstance {
+class StatusUpdate {
+  update: Date;
+  status: string;
+  health: string;
   id: string;
-  date: Date;
-  state: string;
-  constructor(date: Date = new Date(), id: string, state: string) {
-    if (id === undefined || state === undefined)
-      throw console.error("Missing data value");
-    this.id = id;
-    this.date = date;
-    this.state = state;
-  }
-}
 
-class ControlState {
-  controlstate: Array<DataInstance>;
-  constructor(data: any) {
-    if (typeof data === typeof Array<DataInstance>())
-      this.controlstate = data as Array<DataInstance>;
-    if (data.controlstate === undefined) throw console.error("Type error");
-    this.controlstate = [];
-    data.controlstate.forEach((element: DataInstance) => {
-      this.controlstate.push(
-        new DataInstance(element.date, element.id, element.state)
-      );
-    });
-  }
-}
-
-// Abstract entity of Health State
-class HealthInstance {
-  id: string;
-  state: string;
-  constructor(id: string, state: string) {
-    if (id === undefined || state === undefined)
-      throw console.error("Missing data value");
-
-    this.id = id;
-    this.state = state;
-  }
-}
-
-class HealthState {
-  healthstate: Array<HealthInstance>;
-  constructor(data: any) {
-    if (typeof data === typeof Array<HealthInstance>()) this.healthstate = data;
-    if (data.healthstate === undefined) throw console.error("Type error");
-    this.healthstate = [];
-    data.healthstate.forEach((element: HealthInstance) => {
-      this.healthstate.push(new HealthInstance(element.id, element.state));
-    });
+  constructor(dataObj: any) {
+    this.update = new Date();
+    if (dataObj.id === undefined) throw new Error("destination id missing");
+    if (dataObj.status === undefined && dataObj.health === undefined)
+      throw new Error("no status field");
+    this.id = dataObj.id;
+    this.status = dataObj.status;
+    this.health = dataObj.health;
   }
 }
 
 //------------ Server Code ----------------
 var app = express();
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(express.json());
 
 app.get("/", (req, res) => {
   res.status(200).send("control server active 🎮");
 });
 
 // Light status updates
-app.post("/status", (req, res) => {
-  var status;
+app.post("/status", async (req, res) => {
+  if (req.headers.token === undefined) return res.status(400).send("no token");
+  const result = await axios.post(accounts_service + "/verify", {
+    token: req.headers.token,
+  });
+  req.headers.user_id = result.data.data.data.user.id;
   try {
-    status = new ControlState(req.body);
-  } catch (err) {
-    console.log(err);
-    return res.send(err);
+    let status = await new StatusUpdate(req.body);
+    axios
+      .post(data_service, {
+        query: `
+				mutation{
+					addData(
+						user_id: "${req.headers.user_id}",
+						device_id: "${status.id}",
+						updated: "${status.update}",
+						health: "${status.health}",
+						state:  "${status.status}",
+					)
+				}
+			`,
+      })
+      .then((result) => {
+        axios.post(communication_service + "/status-update", status);
+        return res.send(JSON.parse(result.data.data.addData));
+      });
+  } catch (err: any) {
+    return res.status(400).send(err.message);
   }
-  res.send(JSON.stringify(status));
-  // TODO send control requests to communication server
-});
 
-// Manual health checks
-app.post("/health", (req, res) => {
-  var checks;
-  try {
-    checks = new HealthState(req.body);
-  } catch (err) {
-    console.log(err);
-    return res.send(err);
-  }
-  res.send(JSON.stringify(checks));
   // TODO send control requests to communication server
 });
 
@@ -106,8 +80,8 @@ app.listen(port, () => {
   console.log(`control server 🎮 listening at http://localhost:${port}`);
 });
 
-// Manual Health checks
 // TODO:
 // get devices from devices service
 // run health checks on random devices
 // send those commands to communication server
+// save state in devices

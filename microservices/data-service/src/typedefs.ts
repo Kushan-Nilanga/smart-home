@@ -2,7 +2,7 @@ import { gql } from "apollo-server-core";
 
 const out = gql`
   type State {
-    id: ID!
+    id: ID
     updated: String
     health: String
     state: String
@@ -30,6 +30,13 @@ const out = gql`
     createUser(email: String!, pass: String!): User
     createDevice(user_id: ID!, uuid: String!): String
     removeDevice(user_id: ID!, device_id: ID!): String!
+    addData(
+      user_id: ID!
+      device_id: ID!
+      state: String
+      health: String
+      updated: String!
+    ): String
   }
 `;
 

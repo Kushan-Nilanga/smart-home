@@ -1,5 +1,5 @@
+import { ObjectId } from "bson";
 import { User, Device } from "./models/user";
-import mongo from "mongodb";
 
 export = {
   Query: {
@@ -57,6 +57,34 @@ export = {
         throw new Error("device does not exist");
       });
       return response;
+    },
+
+    //-----------------------------------------------------------------------
+    // STATE
+    addData: async (parent: any, args: any, context: any, info: any) => {
+      const { user_id, device_id, health, state, updated } = args;
+      if (health === undefined && state === undefined)
+        throw new Error("no health or state data");
+      console.log(user_id, device_id);
+      const usr = await User.findOne({
+        _id: user_id,
+      });
+
+      var statusUpdate = {
+        updated: updated,
+        state: state,
+        health: health,
+      };
+
+      await usr.devices.forEach(async (element: any, i: any) => {
+        if (element._id.toString() === device_id) {
+          usr.devices[i].state.push(statusUpdate);
+        }
+      });
+
+      usr.markModified("devices");
+      usr.save();
+      return JSON.stringify(usr);
     },
   },
 };

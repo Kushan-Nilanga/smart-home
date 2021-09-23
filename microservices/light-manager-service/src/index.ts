@@ -1,7 +1,6 @@
 import cors from "cors";
 import axios from "axios";
 import express from "express";
-import bodyParser from "body-parser";
 
 const port = process.env.PORT || 3040;
 const accounts_service = process.env.ACCOUNT_SERVICE || "http://localhost:3000";

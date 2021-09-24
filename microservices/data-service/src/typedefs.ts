@@ -10,7 +10,7 @@ const out = gql`
 
   type Device {
     _id: ID
-    uuid: String!
+    uuid: String
     state: [State]
   }
 
@@ -21,7 +21,12 @@ const out = gql`
     devices: [Device]
   }
 
+  type Id {
+    _id: ID!
+  }
+
   type Query {
+    deviceids(user_id: String): [Id]
     userid(user_id: ID!): User
     user(email: String!, pass: String!): User
   }
@@ -37,6 +42,7 @@ const out = gql`
       health: String
       updated: String!
     ): String
+    addHealth(device_id: String!, health: String!): String
   }
 `;
 

@@ -21,11 +21,13 @@
         "control",
         "data",
         "manager",
+        "health",
         "ts-accounts",
         "ts-communication",
         "ts-control",
         "ts-data",
-        "ts-manager"
+        "ts-manager",
+        "ts-health"
       ]
     },
     // Nodemon Watch
@@ -69,6 +71,14 @@
       "args": [],
       "isBackground": true
     },
+    {
+      "label": "health",
+      "type": "shell",
+      "command": "cd health-service && nodemon node build",
+      "dependsOn": ["kill"],
+      "args": [],
+      "isBackground": true
+    },
 
     // Typescript Watch
     {
@@ -103,6 +113,13 @@
       "label": "ts-manager",
       "type": "shell",
       "command": "cd light-manager-service && tsc -w",
+      "args": [],
+      "isBackground": true
+    },
+    {
+      "label": "ts-health",
+      "type": "shell",
+      "command": "cd health-service && tsc -w",
       "args": [],
       "isBackground": true
     }

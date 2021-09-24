@@ -15,6 +15,18 @@ export = {
       const usr = await User.findOne({ pass: pass, email: email }).exec();
       return usr;
     },
+
+    //----------------------------------------------------------------------
+    // DEVICES
+    deviceids: async () => {
+      var ids: any = [];
+      await User.find({}, { "devices._id": 1, _id: 0 }).then((usrs: any) => {
+        usrs.forEach((usr: any) => {
+          ids.push(...usr.devices);
+        });
+      });
+      return ids;
+    },
   },
 
   Mutation: {
@@ -65,7 +77,6 @@ export = {
       const { user_id, device_id, health, state, updated } = args;
       if (health === undefined && state === undefined)
         throw new Error("no health or state data");
-      console.log(user_id, device_id);
       const usr = await User.findOne({
         _id: user_id,
       });
@@ -76,15 +87,40 @@ export = {
         health: health,
       };
 
-      await usr.devices.forEach(async (element: any, i: any) => {
+      var up: boolean = false;
+      usr.devices.forEach(async (element: any, i: any) => {
         if (element._id.toString() === device_id) {
           usr.devices[i].state.push(statusUpdate);
+          up = true;
         }
       });
+      if (up === false) {
+        return "device id not found";
+      }
 
       usr.markModified("devices");
       usr.save();
       return JSON.stringify(usr);
+    },
+
+    addHealth: async (parent: any, args: any, context: any, info: any) => {
+      const { device_id, health } = args;
+      var statusUpdate = {
+        updated: new Date().toString(),
+        health: health,
+      };
+      await User.find({}, {}).then((result: any) => {
+        result.forEach((usr: any, user_idx: any) => {
+          usr.devices.forEach(async (element: any, device_idx: any) => {
+            if (element._id.toString() === device_id) {
+              result[user_idx].devices[device_idx].state.push(statusUpdate);
+              result[user_idx].markModified(`devices`);
+              return result[user_idx].save();
+            }
+          });
+        });
+      });
+      return "success";
     },
   },
 };

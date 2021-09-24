@@ -16,7 +16,7 @@ class User {
   token: String = "";
   constructor(userdata: any) {
     if (userdata.email === undefined || userdata.pass === undefined)
-      throw new Error("undefined username or password");
+      throw new Error("undefined email or password");
     this.pass = userdata.pass;
     this.email = userdata.email;
   }
@@ -64,8 +64,15 @@ app.post("/login", (req, res) => {
 			`,
       })
       .then((result) => {
-        const token = jwt.sign({ data: result.data, logged: true }, secret);
-        return res.send(token);
+        if (result.data.data.user.email != undefined) {
+          const token = jwt.sign({ data: result.data, logged: true }, secret);
+          return res.send(token);
+        } else {
+          return res.status(400).send("email not found");
+        }
+      })
+      .catch((e) => {
+        return res.status(400).send("error finding user");
       });
   } catch (e) {
     return res.send("error logging in");

@@ -17,7 +17,7 @@ const myFilterObj = new Filter("smartlight/id/type");
 myFilterObj.addFilter(
   [
     { property: "type", comparison: "==", value: "health" },
-    { property: "message", comparison: "!=", value: "request" },
+    { property: "message", comparison: "==", value: "unhealthy" },
   ],
   (topic, message) => {
     console.log(topic, message);
@@ -30,9 +30,7 @@ myFilterObj.addFilter(
     { property: "type", comparison: "==", value: "status" },
     { property: "message", comparison: "==", value: "completed" },
   ],
-  (topic, message) => {
-    console.log(topic, "completed");
-  }
+  (topic, message) => {}
 );
 //----------------------------------------------------------------
 
@@ -81,17 +79,6 @@ app.post("/status-update", async (req, res) => {
     return res.status(200).send("request sent");
   } catch (e) {
     return res.status(400).send("status update error");
-  }
-});
-
-app.post("/health-check", async (req, res) => {
-  try {
-    const update = new StatusUpdate(req.body);
-    if (update.health === undefined) throw new Error("health undefined");
-    client.publish(`smartlight/${update.id}/health/`, "request");
-    return res.status(200).send("request sent");
-  } catch (e) {
-    return res.status(400).send("health check error");
   }
 });
 

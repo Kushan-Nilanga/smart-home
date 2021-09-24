@@ -12,8 +12,6 @@ const accounts_service = process.env.ACCOUNT_SERVICE || "http://localhost:3000";
 /**
  * Functionality
  *	1. Send messages to turn 1 light on/off.
- * 	2. Send messages to turn batch of lights on/off.
- *  3. Health checks.
  */
 
 // Abstract entity of Control State
@@ -65,23 +63,24 @@ app.post("/status", async (req, res) => {
 				}
 			`,
       })
-      .then((result) => {
-        axios.post(communication_service + "/status-update", status);
-        return res.send(JSON.parse(result.data.data.addData));
+      .then(async (result) => {
+        if (result.data.data.addData === "device id not found") {
+          return res.status(400).send(result.data.data.addData);
+        }
+        const com_result = await axios.post(
+          communication_service + "/status-update",
+          status
+        );
+        return res.send({
+          "data-service": result.status,
+          "communication-service": com_result.status,
+        });
       });
   } catch (err: any) {
     return res.status(400).send(err.message);
   }
-
-  // TODO send control requests to communication server
 });
 
 app.listen(port, () => {
   console.log(`control server 🎮 listening at http://localhost:${port}`);
 });
-
-// TODO:
-// get devices from devices service
-// run health checks on random devices
-// send those commands to communication server
-// save state in devices

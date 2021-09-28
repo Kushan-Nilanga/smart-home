@@ -7,7 +7,8 @@ import bodyParser from "body-parser";
 
 const port = process.env.PORT || 3000;
 const data_service =
-  process.env.DATA_SERVICE || "http://localhost:4000/graphql";
+  process.env.DATA_SERVICE ||
+  "http://data-service-asg-lb-1678460377.ap-southeast-2.elb.amazonaws.com/graphql";
 const secret = "mysecret";
 
 class User {

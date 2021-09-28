@@ -2,7 +2,7 @@ import axios from "axios";
 import mqtt from "mqtt";
 import express from "express";
 
-const port = process.env.PORT || 3020;
+const port = process.env.PORT || 3000;
 const data_service =
   process.env.DATA_SERVICE ||
   "http://data-service-asg-lb-1678460377.ap-southeast-2.elb.amazonaws.com/graphql";

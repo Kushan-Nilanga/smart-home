@@ -4,10 +4,10 @@ import bodyParser from "body-parser";
 
 const port = process.env.PORT || 3020;
 const data_service =
-  process.env.DATA_SERVICE || "http://localhost:4000/graphql";
+  process.env.DATA_SERVICE || "http://data-service-asg-lb-1678460377.ap-southeast-2.elb.amazonaws.com/graphql";
 const communication_service =
-  process.env.COMMUNICATION_SERVICE || "http://localhost:3010";
-const accounts_service = process.env.ACCOUNT_SERVICE || "http://localhost:3000";
+  process.env.COMMUNICATION_SERVICE || "http://communication-service-alb-2011332689.ap-southeast-2.elb.amazonaws.com";
+const accounts_service = process.env.ACCOUNT_SERVICE || "http://account-service-alb-831679390.ap-southeast-2.elb.amazonaws.com";
 
 /**
  * Functionality

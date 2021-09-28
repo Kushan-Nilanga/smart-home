@@ -3,9 +3,12 @@ import axios from "axios";
 import express from "express";
 
 const port = process.env.PORT || 3040;
-const accounts_service = process.env.ACCOUNT_SERVICE || "http://localhost:3000";
+const accounts_service =
+  process.env.ACCOUNT_SERVICE ||
+  "http://account-service-alb-831679390.ap-southeast-2.elb.amazonaws.com";
 const data_service =
-  process.env.DATA_SERVICE || "http://localhost:4000/graphql";
+  process.env.DATA_SERVICE ||
+  "http://data-service-asg-lb-1678460377.ap-southeast-2.elb.amazonaws.com/graphql";
 const app = express();
 app.use(cors());
 app.use(express.json());

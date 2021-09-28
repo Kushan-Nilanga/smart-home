@@ -1,13 +1,14 @@
 import axios from "axios";
-import { request } from "http";
 import mqtt from "mqtt";
+import express from "express";
 
+const port = process.env.PORT || 3020;
 const data_service =
-  process.env.DATA_SERVICE || "http://localhost:4000/graphql";
+  process.env.DATA_SERVICE ||
+  "http://data-service-asg-lb-1678460377.ap-southeast-2.elb.amazonaws.com/graphql";
 const mqtt_url = process.env.MQTT || "mqtt://test.mosquitto.org";
-const fetch_interval = process.env.FETCH_INT || 2;
-const check_interval = process.env.CHECK_INT || 0.05;
-const health_timeout = process.env.HEALTH_TIMEOUT || 0.5;
+const fetch_interval = process.env.FETCH_INT || 5;
+const check_interval = process.env.CHECK_INT || 1;
 
 //----------------------------------------------------------------
 // GET DEVICES
@@ -103,4 +104,15 @@ client.on("message", (topic, msg) => {
     time: new Date().getTime(),
   });
   last.set(splits[1], state);
+});
+
+var app = express();
+app.use(express.json());
+
+app.get("/", (req, res) => {
+  res.status(200).send("health check server active");
+});
+
+app.listen(port, () => {
+  console.log(`health check server listening at http://localhost:${port}`);
 });

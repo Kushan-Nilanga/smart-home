@@ -14,25 +14,34 @@ const port = process.env.PORT || 4000;
 const app = express();
 app.use(cors());
 
-async function startApolloServer(typeDefs: any, resolvers: any) {
-  await mongoose.connect(
-    "mongodb+srv://root:toor@sit314.g7vp8.mongodb.net/test?retryWrites=true&w=majority"
-  );
+function timeout(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
-  const httpServer = http.createServer(app);
-  const server = new ApolloServer({
-    typeDefs,
-    resolvers,
-    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
-  });
-  await server.start();
-  server.applyMiddleware({ app });
-  await new Promise((resolve: any) =>
-    httpServer.listen({ port: port }, resolve)
-  );
-  console.log(
-    `server started at http://127.0.0.1:${port + server.graphqlPath}`
-  );
+async function startApolloServer(typeDefs: any, resolvers: any) {
+  try {
+    await mongoose.connect(
+      "mongodb+srv://root:toor@sit314.g7vp8.mongodb.net/test?retryWrites=true&w=majority"
+    );
+
+    const httpServer = http.createServer(app);
+    const server = new ApolloServer({
+      typeDefs,
+      resolvers,
+      plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+    });
+    await server.start();
+    server.applyMiddleware({ app });
+    await new Promise((resolve: any) =>
+      httpServer.listen({ port: port }, resolve)
+    );
+    console.log(
+      `server started at http://127.0.0.1:${port + server.graphqlPath}`
+    );
+  } catch (e) {
+    await timeout(10000);
+    startApolloServer(typeDefs, resolvers);
+  }
 }
 
 startApolloServer(typeDefs, resolvers);

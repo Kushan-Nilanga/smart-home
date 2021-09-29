@@ -58,13 +58,15 @@ setInterval(() => {
       const parsed = JSON.parse(data.toString());
       if (parsed.state === "request" && unhealthy.indexOf(device._id) === -1) {
         unhealthy.push(device._id);
-        axios.post(data_service, {
-          query: `
+        axios
+          .post(data_service, {
+            query: `
 					mutation{
 						addHealth(device_id: "${device._id}", health: "unhealthy")
 					}
 					`,
-        });
+          })
+          .catch((e) => console.log());
       }
     }
 

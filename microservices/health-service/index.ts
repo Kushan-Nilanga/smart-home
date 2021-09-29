@@ -34,6 +34,9 @@ function getDevices() {
     .then((result: any) => {
       devices = result.data.data.deviceids;
       last = new Map();
+    })
+    .catch((e) => {
+      console.log(e);
     });
 }
 

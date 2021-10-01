@@ -34,7 +34,7 @@ const out = gql`
   type Mutation {
     createUser(email: String!, pass: String!): User
     createDevice(user_id: ID!, uuid: String!): String
-    removeDevice(user_id: ID!, device_id: ID!): String!
+    removeDevice(user_id: ID!, device_id: ID!): String
     addData(
       user_id: ID!
       device_id: ID!

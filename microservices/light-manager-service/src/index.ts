@@ -46,9 +46,10 @@ app.use("/", async (req, res, next) => {
 });
 
 app.get("/devices", (req, res) => {
-  axios
-    .post(data_service, {
-      query: `
+  try {
+    return axios
+      .post(data_service, {
+        query: `
 			query	{
 				userid(user_id:"${req.headers.user_id}") {
 					id
@@ -64,10 +65,13 @@ app.get("/devices", (req, res) => {
 				}
 			}
 			`,
-    })
-    .then((result) => {
-      res.status(200).send(result.data);
-    });
+      })
+      .then((result) => {
+        return res.status(200).send(result.data);
+      });
+  } catch (e) {
+    return res.status(400).send("error");
+  }
 });
 
 app.post("/create", (req, res) => {

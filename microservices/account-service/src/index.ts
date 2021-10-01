@@ -82,13 +82,17 @@ app.post("/login", (req, res) => {
 
 // verify user tokens
 app.post("/verify", (req, res) => {
-  if (req.body.token === undefined) return res.status(400).send("no token");
-  jwt.verify(req.body.token, secret, (err: any, decoded: any) => {
-    if (err) return res.status(400).send("cannot verify token");
-    if (decoded !== undefined) return res.send(decoded);
-    console.log(decoded);
+  try {
+    if (req.body.token === undefined) return res.status(400).send("no token");
+    jwt.verify(req.body.token, secret, (err: any, decoded: any) => {
+      if (err) return res.status(400).send("cannot verify token");
+      if (decoded !== undefined) return res.send(decoded);
+      console.log(decoded);
+      return res.status(400).send("token error");
+    });
+  } catch (e) {
     return res.status(400).send("token error");
-  });
+  }
 });
 
 // Default endpoint

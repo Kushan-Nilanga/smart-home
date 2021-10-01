@@ -77,7 +77,7 @@ app.get("/devices", (req, res) => {
 app.post("/create", (req, res) => {
   try {
     const newDevice = new Device(req.body);
-    axios
+    return axios
       .post(data_service, {
         query: `
 			mutation	{
@@ -86,12 +86,11 @@ app.post("/create", (req, res) => {
 			`,
       })
       .then((result) => {
-        console.log(result.data);
+        return res.status(200).send("device added successfully");
       });
   } catch (e) {
     return res.status(400).send("data error");
   }
-  return res.status(200).send("device added successfully");
 });
 
 app.post("/remove", async (req, res) => {
@@ -112,7 +111,6 @@ app.post("/remove", async (req, res) => {
         return res.status(200).send(result.data);
       })
       .catch((e) => {
-        throw new Error("request error");
         return res.status(400).send("request error");
       });
   }

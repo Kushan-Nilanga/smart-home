@@ -152,7 +152,7 @@ export = {
         });
         return "success";
       } catch (e) {
-        return e;
+        return {};
       }
     },
   },
